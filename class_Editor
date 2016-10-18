@@ -1,0 +1,267 @@
+//written by: Reilly Q. Curran
+//last edited: 10/14/2016
+//last compiled: 10/14/2016
+
+
+#include<iostream>
+#include<string>
+#include<fstream>
+
+void setStudents();
+bool menu();
+void viewStudent(int);
+int addStudent(int);
+void storeData(int);
+
+class student
+{
+public:
+	std::string firstName;  //student's first name
+	std::string lastName;  //student's last name
+	std::string major;  //student's major
+	int classRank;  //student's class rank
+	double scores[5];  //an array of 5 assignment scores
+};
+
+student classMembers[30];
+
+int main()//calls setstudents, the menu, and closes the program when the user is done.
+{
+	std::cout << "hello" << std::endl;
+	bool runProg = true; //used by main() to determine when the user is done with the program
+	setStudents(); // calls the setstudents function
+	while (runProg == true)
+	{
+		runProg = menu();
+	}
+	return 0;
+}
+
+void setStudents() //creates a default class of 10 students for the user to manipulate
+{
+	std::cout << "setting default class..." << std::endl;
+	classMembers[0] = { "John", "Doe", "Forensic Science", 162,{ 87.6, 95.1, 87.2, 71.1, 82.1 } };
+	classMembers[1] = { "Jane", "Doe", "Criminal Justice", 282,{ 96.1, 86.2, 76.1, 82.1, 91.2 } };
+	classMembers[2] = { "Mathew", "Fitzpatrick", "Digital Arts", 178,{ 85.2, 77.1, 85.1, 93.2, 80.4 } };
+	classMembers[3] = { "Sean", "Rosetta", "Linguistics", 191,{ 74.1, 88.1, 94.2, 84.4, 79.8 } };
+	classMembers[4] = { "Carlotta", "Hernandez", "Electrical Engineering", 384,{ 83.1, 99.2, 83.4, 75.8, 88.1 } };
+	classMembers[5] = { "James", "Rogen", "Chemical Engineering", 319,{ 92.2, 80.4, 72.8, 86.1, 97.3 } };
+	classMembers[6] = { "Seth", "Franco", "Pre-Med", 101,{ 81.4, 71.8, 81.1, 97.3, 86.6 } };
+	classMembers[7] = { "Clark", "Kent", "Investigative Journalism", 728,{ 70.8, 82.1, 90.3, 88.6, 75.1 } };
+	classMembers[8] = { "Amanda", "Waller", "Political Science", 645,{ 89.1, 93.3, 89.6, 79.1, 84.2 } };
+	classMembers[9] = { "Reilly", "Curran", "Software Engineering", 264,{ 98.3, 84.6, 78.1, 80.2, 93.1 } };
+}
+
+bool menu() //directs the user to make a selection from the menu and returns a boolean value when the user is done
+{
+	int choice = -1;
+	int rep = 0;
+	int classSize = 10;
+	int exit = 0;
+	int newStudent;
+	std::cout << "Please choose One of the following menu choices." << std::endl;
+	std::cout << "1: View A Student" << std::endl;
+	std::cout << "2: Add A Student To The Class" << std::endl;
+	std::cout << "3: Save Your Work" << std::endl;
+	std::cout << "0: Exit the Program" << std::endl;
+	std::cout << "selection: ";
+	std::cin >> choice;
+	while (exit != 1)
+	{
+		if (rep > 0) //displays the menu again once the user has returned from their function of choice
+		{
+			std::cout << "Please choose One of the following menu choices." << std::endl;
+			std::cout << "1: View A Student" << std::endl;
+			std::cout << "2: Add A Student To The Class (no more than 30 students are allowed)" << std::endl;
+			std::cout << "3: Save Your Work" << std::endl;
+			std::cout << "0: Exit the Program" << std::endl;
+			std::cout << "selection: ";
+			std::cin >> choice;
+		}
+		switch (choice)
+		{
+		case 1://send the user to examine a single student
+			viewStudent(classSize);
+			rep++;
+			std::cout << std::endl;
+			break;
+		case 2://send the user to add a student to the class
+			newStudent = addStudent(classSize);//iterates the size of the class while inside the loop
+			if (newStudent == 1)
+			{
+				classSize++;
+			}
+			rep++;
+			std::cout << std::endl;
+			break;
+		case 3://saves the user's work
+			storeData(classSize);
+			rep++;
+			std::cout << "Your Work has been saved as 'studentData.txt'." << std::endl; // assures the user their work has been saved
+			std::cout << std::endl;
+			break;
+		case 0:
+			std::cout << std::endl;
+			exit++; //iterates the exit variable, allowing the loop to end, and the program as well by extension.
+			break;
+		default: // informs the user their choice was not a given option
+			std::cout << "Your selection did not match any of the given choices, please choose one of the following options." << std::endl;
+			rep++;
+			std::cout << std::endl;
+			break;
+		}
+	}
+	return false; //returns false to main() ending the program
+}
+
+void viewStudent(int classSize)
+{
+	int studentFinder;  //the list number of the student
+	int index;
+	double max = 0; //determines maximum value
+	double min =1000; //determines minimum value
+	double total = 0; //total grade out of 500
+	double mean; // final average grade out of 100
+	for (int k = 0; k < classSize; k++)
+		{
+			std::cout << k + 1 << "-" << classMembers[k].firstName + " " + classMembers[k].lastName << std::endl;
+		}
+		std::cout << "Which student would you like to see? (choose number the number to the left of their name)  Input 0 to exit." << std::endl;
+		std::cout << "Student: ";
+		std::cin >> studentFinder; //prompts user to chhose one of the the numbers listed beside the list of students
+
+	if ((studentFinder < 30) && (studentFinder > 0)) 
+		// technically the empty space is a class member, I could not get the classSize variable to behave here 
+		//so I just defaulted to the maximum class size available
+	{
+		index = studentFinder-1;
+		for (int x = 0; x < 5; x++)
+		{
+			if (classMembers[index].scores[x] > max) //finds the student's max grade
+			{
+				max = classMembers[index].scores[x];
+			}
+
+			if (classMembers[index].scores[x] < min) // finds the student's minimum grade
+			{
+				min = classMembers[index].scores[x];
+			}
+
+			total += classMembers[index].scores[x];  // adds the current grade to the total
+		}
+		mean = total / 5.0;
+		//prints out the student's information to the user
+		std::cout << "Name: " << classMembers[index].firstName + " " + classMembers[index].lastName << std::endl;
+		std::cout << "Major: " << classMembers[index].major << std::endl;
+		std::cout << "Class Rank: " << classMembers[index].classRank << std::endl;
+		std::cout << "Scores: ";
+		for (int y = 0; y < 5; y++) // prints out the five assignment grades
+		{
+			std::cout << classMembers[index].scores[y] << " ";
+		}
+		std::cout << std::endl;
+		std::cout << "Highest Score: " << max << std::endl;
+		std::cout << "Lowest Score: " << min << std::endl;
+		std::cout << "Mean Score: " << mean << std::endl;
+			
+	}
+	//confirms the user's decision to leave to the menu
+	else if (studentFinder == 0)
+	{
+		std::cout << "Okay." << std::endl;
+	}
+	//tells the user that the function did not find a student
+	else 
+	{
+		std::cout << "I am sorry, but this student is not in the class." << std::endl;
+	}
+}
+
+int addStudent(int classSize)
+{
+	std::string firstName;  //new student's first name
+	std::string lastName; //new student's last name
+	std::string major; //new student's major
+	char certain; //determines if the user is sure they want to add a student to the class
+	int classRank = 0; //new student's class rank
+	double grades[5] = { 0 }; //an array of the new student's grades
+	if (classSize == 30)
+	{
+		//does not permit the user to add a student if the class is full
+		std::cout << "This class is already full." << std::endl;
+		return classSize;
+	}
+	else
+	{
+		//asks the user if they are sure they mean to add a student to the class
+		std::cout << "Are you sure you want to add another student? (y/n): ";
+		std::cin >> certain;
+		switch (certain)
+		{
+		case 'y':
+			//asks the user for the new student's information
+			std::cout << "What is this student's first name?" << std::endl;
+			std::cout << "First name: ";
+			std::cin >> firstName;
+			std::cout << std::endl;
+			std::cout << "What is this student's last name?" << std::endl;
+			std::cout << "last name: ";
+			std::cin >> lastName;
+			std::cout << std::endl;
+			std::cout << "What is this student's major?" << std::endl;
+			std::cout << "major: ";
+			std::cin >> major;
+			std::cout << std::endl;
+			std::cout << "What is this student's Class Rank (positive integer)?" << std::endl;
+			std::cout << "Class Rank: ";
+			std::cin >> classRank;
+			std::cout << std::endl;
+			std::cout << "What are this student's grades (1-100 scale)?" << std::endl;
+			for (int i = 0; i < 5; i++)
+			{
+				std::cout << "Grade " << i + 1 << ": ";
+				std::cin >> grades[i];
+				std::cout << std::endl;
+			}
+			//creates the new student array index
+			classMembers[classSize] = { firstName, lastName, major, classRank,{ grades[0], grades[1], grades[2], grades[3], grades[4] } };
+			return 1; //iterates the class size for the menu to pass to other functions so that the new student is accounted for.
+			break;
+
+		case 'n':
+			//if the user does not wish to add a student, they can input n and be returned to the menu
+			return 0;
+			break;
+
+		default: // informs the user their selection was invalid
+			std::cout << "I'm sorry, that was not one of the given choices (y/n)." << std::endl;
+			return 0;
+			break;
+		}
+	}
+}
+
+void storeData(int classSize)
+{
+	int i = 0; //saves the class info 
+	std::ofstream outData;
+	outData.open("studentData.txt");
+	//After the first lab assignment (the email adress generator), I found the xml format much more organized 
+	//for multiple data types and decided to use it here for that reason. It is saved as a txt file for ease of access though.
+	while (i < classSize)
+	{
+		outData << "<student>" << std::endl;
+		outData << "<Name>" << classMembers[i].firstName + " " + classMembers[i].lastName << "</Name>" << std::endl;
+		outData << "<Major>" << classMembers[i].major << "</Major>" << std::endl;
+		outData << "<Class Rank>" << classMembers[i].classRank << "</Class Rank>" << std::endl;
+		outData << "<grades> ";
+		for (int j = 0; j < 5; j++)
+		{
+			outData << classMembers[i].scores[j] << " ";
+		}
+		outData << "</grades>" << std::endl;
+		outData << "</student>" << std::endl;
+		std::cout << "Student Saved" << std::endl;
+		i++;
+	}
+}
